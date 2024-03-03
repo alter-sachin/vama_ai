@@ -12,7 +12,7 @@ import pandas as pd
 import json
 
 import requests
-
+from class_list import classes_list
 
 
 load_dotenv()
@@ -34,7 +34,7 @@ import os
 
 
 template = """A conversation of official nature between professional will be passed to you. Extract from it all scores that suggest if the classes mentioned
-with probability as score of its presence in the conversation 
+with probability as score of its presence in the conversation. The classes are {{classes_list}}
 Do not extract the name of the classes itself. If no classes are mentioned that's fine - you don't need to extract any! Just return an empty list.
 Do not make up or guess ANY extra information. Only extract what exactly is in the text."""
 
@@ -171,11 +171,10 @@ def identify_contact(text):
     prompt = f"""
 The text is delimited with triple backticks. \
 The text is a conversation between two professionals \
-Identify the following from the text : \
-    - In the text is anyone sharing phone number like whatsapp number or contact number, answer true or false. \
-      Focus on phone number sharing Only. \
-      Information like name, date of birth, place and time of birth are fine to be shared. \ 
-    - Probability between 0 and 1 of thee answer to above question. \
+Identify these queries from the text : \
+    - In the text is anyone sharing phone number like whatsapp number or contact number, answer true if yes and false if not. \
+       \
+    - Probability between 0 and 1 to previous query. \
 Format your response as JSON Object with \
 "contact_details" and "probability" as the keys.
 
@@ -189,3 +188,14 @@ Review text: '''{text}'''
 
 def chunkstring(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
+
+
+##########################tests##########################################
+
+# string1 = " हां. आप ऐसा करो इस number पर आप WhatsApp करो तिहत्तर अठानवे सतासी अट्ठासी हज़ार.एक second रुको, एक second रुको. बताओ number तिहत्तर. अठानवे अठानवे, अठानवे 9 8 है? हां, 9 8. हां, तैंतीस 8787 double 896.Ok, इसमें WhatsApp करूं? हां हां, यह मेरा personal number. ठीक है ok, मैं अभी उसको save करके आपको message करती हूं."
+
+# string2 = "मेरी date of birth 6 march 1993 hai, aur mai 5 saal ki hu, aur meera janam subah 10 baje hua tha,aap call karo mujhe diya maine 675111"
+
+# eng = translate_hindi_to_english(string2)
+# print(eng)
+# identify_contact(eng)
