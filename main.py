@@ -13,10 +13,10 @@ if __name__ == "__main__":
 
 }
     sensitivity = 0.1
-    specific = 0.4
+    specific = 0.2
     audio_csv_file = "r1.csv"
-    outfile_audio = "f3.csv"
-    outfile_errors = "f4.csv"
+    outfile_audio = "f3_mar3_2.csv"
+    outfile_errors = "f4_mar3_2.csv"
     #t = read_variable_from_csv("recordings_hinglish_transcript.csv","transcript")
     #print(t[0])
     #t1 = "hello हां पूजा जी राधे राधे राधे राधे अरे मैं बोल रही थी आपसे hello तो आप offline थे आज हां आज पहला दिन था ना नवरात्रि का तो part भी था पूरा दिन ok मैं यह पुछ रही थी आपने वह बताया था ना कुछ करने के लिए नवरात्रों में हां हां तो क्या करना था मुझे बताओ आज का दिन तो निकल गया यही कहां निकला है अरे एक दिन तो निकल गया नहीं भाई अभी नवरात्रि का पहला ही दिन तो है आज रात में ही तो करना हां आप ऐसा करो इस number पर आप whatsapp करो तिहत्तर अठानवे सतासी अट्ठासी हज़ार एक second रुको एक second रुको बताओ number तिहत्तर अठानवे अठानवे अठानवे nine eight है हां nine eight हां तैंतीस eight seven eight seven double eight nine six ok इसमें whatsapp करूं हां हां यह मेरा personal number ठीक है ok मैं अभी उसको save करके आपको message करती हूं ठीक है message कर दो मैं लिख देता हूं ठीक है यहां से call cut कर दूं हां हां कर दो"
@@ -132,7 +132,7 @@ if __name__ == "__main__":
                 contact_response = identify_contact(eng_from_hindi)
                 contact_details = (contact_response["contact_details"])
                 probability = (contact_response["probability"])
-                if(probability>0.5 and probability<0.7):
+                if(probability>0.4 and probability<0.6):
                     contact_details = "intermediate"
                 df = pd.DataFrame([[astrologer_idx,id1x,type1x,user_idx,created_atx,order_item_idx,star_ratingx,number,url_base,transcript,confidence,eng_from_hindi,sexual,sexual_score,hate,hate_score,harrasment,harrasment_score,self_harm,self_harm_score,sexual_minor,sexual_minor_score,threatening,threatening_score,violence_graphic,violence_graphic_score,self_harm_intent,self_harm_intent_score,self_harm_instructions,self_harm_instructions_score,violence,violence_score,contact_details,probability]],
                     columns=['astrologer_id','id1','type1','user_id','created_at','order_item_id','star_rating','number','url_base','transcript','confidence','eng_from_hindi','sexual','sexual_score','hate','hate_score','harrasment','harrasment_score','self_harm','self_harm_score','sexual_minor','sexual_minor_score','threatening','threatening_score','violence_graphic','violence_graphic_score','self_harm_intent','self_harm_intent_score','self_harm_instructions','self_harm_instructions_score','violence','violence_score','contact_details','probability'])
@@ -141,6 +141,7 @@ if __name__ == "__main__":
                 df.to_csv(outfile_audio, mode='a', header=hdr)
                 #df.to_csv('file_name.csv',mode='a+')
                 print(transcript)
+                sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions = (False,)*10
         else:
             l = 34 *["None"]
             transcript = "None"
