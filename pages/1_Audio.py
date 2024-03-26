@@ -224,7 +224,7 @@ def run_on_csv(uploaded_file):
 
 # Page title
 st.set_page_config(page_title='🦜🔗 Vama AI Audio CSV')
-st.title('🦜🔗 Vama AI Classify Audio Calls Data')
+st.title('🦜🔗 Classify Audio Calls Data')
 
 # File upload
 uploaded_file = st.file_uploader('Upload the audio URL csv', type='csv')
@@ -232,7 +232,7 @@ uploaded_file = st.file_uploader('Upload the audio URL csv', type='csv')
 
 
 download_instructions = st.empty()
-download_instructions.text("🦜🔗 Download button enables when 100% done")
+download_instructions.text("🦜🔗 Download button enables when 100% done. Do not refresh or close tab.\n All processing will be lost.")
 #with open('f3_mar3_111.csv') as f:
 #st.title('🦜🔗 Download button enables when 100% done')
 #download_final = st.download_button('Download Final CSV')  # Defaults to 'text/plain'

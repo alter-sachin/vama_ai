@@ -274,7 +274,7 @@ def trim_audio(intervals, input_file_path, output_file_path):
     # iterate over the list of time intervals
     for i, (start_time, end_time) in enumerate(intervals):
         # extract the segment of the audio
-        segment = audio[start_time*1000:end_time*1000]
+        segment = audio[start_time*1000-1000:end_time*1000+1000]
 
         # construct the output file path
         #output_file_path_i = f"{output_file_path}_{i}.wav"
@@ -282,9 +282,9 @@ def trim_audio(intervals, input_file_path, output_file_path):
         # export the segment to a file
     combined_sounds.export(output_file_path, format='wav')
 
-# test it out
-print("Trimming audio...")
-#trim_audio([[0, 1], [1, 2]], "test_input.wav", "test_output")
+# # test it out
+# print("Trimming audio...")
+# #trim_audio([[0, 1], [1, 2]], "test_input.wav", "test_output")
 
 
 import numpy as np
