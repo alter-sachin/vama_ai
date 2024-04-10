@@ -207,13 +207,13 @@ def chunkstring(string, length):
 def identify_greeting(text):
     prompt = f"""
 The text is delimited with triple backticks. \
-The text is a conversation between two professionals \
+The text is a conversation between two professionals that work for a company named Vama \
 Identify these queries from the text : \
-    - In the text is anyone greeting the other person at the start properly , return value as true if yes and false if not. \
+    - In the text is anyone greeting the other person at the start properly with words and sentences like Welcome to Vama or Namaskar I welcome you from Vama or Namaskar I am talking from Vama , return value as true if yes and false if not. \
        \
     - Probability between 0 and 1 to previous query. \
 Format your response as JSON Object with \
-"contact_details" and "probability" as the keys.
+"greeting_details" and "probability" as the keys.
 if contact details reponse is N/A replace it with false
 Review text: '''{text}'''
 """
@@ -241,8 +241,8 @@ def identify_silence(words,length_audio):
     print(silence_ranges)
     return silence_ranges
 
-identify_greeting(text5)
-identify_greeting(text6)
+#identify_greeting(text5)
+#identify_greeting(text6)
 
 
 
@@ -256,13 +256,18 @@ import requests
 import wave,wget
 
 def download_audio(url):
-    full_sounds = AudioSegment.empty()
+    #sound = AudioSegment.empty()
     #audio = AudioSegment.from_file("")
     filename = wget.download(url)
-    sound = AudioSegment.from_file(filename, format='m4a')
-    file_handle = sound.export("1.wav", format='wav')
+    extension = os.path.splitext(filename)[1]
+    if(extension=="mp4"):
+        sound = AudioSegment.from_file(filename, format='m4a')
+        file_handle = sound.export("1.wav", format='wav')
+    elif(extension=="mp3"):
+        sound = AudioSegment.from_mp3(filename)
+        file_handle = sound.export("1.wav", format='wav')
     #open("file.wav", 'wb').write(resp.content)
-
+    os.remove(filename)
     #f = wave.open(audio_file, "r")
 
 
@@ -319,3 +324,41 @@ def calculate_average_db(wav_file):
 
 # # Example usage:
 
+
+#2024-02-26T18:30:27.120Z
+
+from datetime import datetime
+
+
+
+#print(millisec)
+
+
+def convert_to_ms(t):
+    time = str(t)
+    # time = time.replace("T"," ")
+    # time = time.replace("Z","")
+    dt_obj = datetime.strptime(time,
+                           '%Y-%m-%dT%H:%M:%S.%fZ')
+    millisec = dt_obj.timestamp() * 1000
+    print(millisec)
+    return millisec
+
+
+
+def difference_in_time(t1,t2):
+    current_time = t1
+    prev_time = t2
+    current_time_ms = convert_to_ms(t1)
+    prev_time_ms = convert_to_ms(t2)
+    dif = current_time_ms - prev_time_ms
+    return dif*1000
+
+
+import time
+
+
+def timestring():
+    timestr = time.strftime("%d%m%Y")
+    print(timestr)
+    return timestr
