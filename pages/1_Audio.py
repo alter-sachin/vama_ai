@@ -199,7 +199,7 @@ def run_on_csv(uploaded_file):
                     #sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions,silence,if_any = (False,)*12
         except Exception as e:
             print(e)
-            l = 38 *["None"]
+            l = 39 *["None"]
             transcript = "None"
             confidence = "None"
             words = "None"
