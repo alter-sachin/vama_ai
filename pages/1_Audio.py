@@ -6,14 +6,17 @@ import logging, verboselogs
 
 from chains import *
 import streamlit as st
+from streamlit.runtime.scriptrunner import add_script_run_ctx
+from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
+
 
 from io import StringIO
 from uuid import uuid4 
 
+import math
 
 
-
-def run_on_csv(uploaded_file):
+def run_on_csv(uploaded_file,n_threads,ctx):
     sensitivity = 0.1
     specific = 0.2
     silence_threshold = 10  #### seconds of silence allowed
@@ -39,7 +42,10 @@ def run_on_csv(uploaded_file):
     # #for i in range(0,len(url)):
     #total_urls = 10
     total_urls = len(url)
-    for i in range(1,total_urls):
+    step = n_threads
+    add_script_run_ctx(ctx) # register context on thread func
+    chunk = math.floor(total_urls/step)
+    for i in range(total_urls-step*chunk,total_urls):
         try:
             line_text.text("Processing line number %i" % i +" out of total lines %i" %total_urls)
             #frame_text.text("Percentage Completed %i" % percentage + "%")
@@ -213,10 +219,10 @@ def run_on_csv(uploaded_file):
         template_byte = template_file.read()
         frame_text.text("Download Now")
         #progress_bar.progress(100)
-    st.download_button(label="Download Final Result",
-                        data=template_byte,
-                        file_name="audio_output.csv",
-                        mime='text/csv')
+        st.download_button(label="Download Final Result",
+                            data=template_byte,
+                            file_name=outfile_audio,
+                            mime='text/csv')
     #st.dataframe(df)
 
 
@@ -256,7 +262,16 @@ if uploaded_file is not None:
         f.write(content)
     #t1 = threading.Thread(target=run_on_csv, args=(temp_filepath))
     #t1.start()
-    run_on_csv(temp_filepath)
+    n_threads = 5
+    
+    thread_list =[]
+    for thr in range(n_threads):
+        ctx = get_script_run_ctx() # create a context
+        thread = threading.Thread(target=run_on_csv, args=(temp_filepath,n_threads,ctx),daemon=True)
+        thread_list.append(thread)
+        thread_list[thr].start()
+        #run_on_csv(temp_filepath,n_threads)
+
 
 
 #if uploaded_file2 is not None:
