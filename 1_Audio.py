@@ -43,9 +43,9 @@ def run_on_csv(uploaded_file,thread_number,n_threads):
     #total_urls = 10
     total_urls = len(url)
     step = thread_number
-    
-    chunk = math.floor(total_urls/step)
-    for i in range((step-1)*chunk,step*chunk):
+
+    chunk = math.floor(total_urls/n_threads)
+    for i in range((step)*chunk,(step+1)*chunk):
         try:
             print("Processing line number %i" % i +" out of total lines %i" %total_urls)
             #frame_text.text("Percentage Completed %i" % percentage + "%")
@@ -57,19 +57,21 @@ def run_on_csv(uploaded_file,thread_number,n_threads):
             created_atx = created_at[i]
             order_item_idx = order_item_id[i]
             star_ratingx = star_rating[i]
-            print(url_base)
+            #print(url_base)
             AUDIO_URL = {"url":url_base}
             response_object = call_api(AUDIO_URL)
 
             #print(response_object)
             number = i
             if(response_object):
-                print("line number is ",number)
-                sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions,silence,background_noise,greeting_response,greeting_prob,if_any = (False,)*15
+                #print("line number is ",number)
+                sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions,silence,silence_rangex,greeting_response,greeting_prob,if_any = (False,)*15
                 #write each response to new csv
                 transcript = response_object.results.channels[0].alternatives[0].transcript
+                
                 confidence = response_object.results.channels[0].alternatives[0].confidence
-                print("here",transcript,confidence)
+                #wordsx = response_object.results.channels[0].alternatives[0].words
+                #print("here",transcript,confidence)
 
                 ##### silence range and thresold 
                 words = response_object.results.channels[0].alternatives[0].words
@@ -92,11 +94,17 @@ def run_on_csv(uploaded_file,thread_number,n_threads):
                         if((float(silence_range[1])-float(silence_range[0]))>silence_threshold):
                             silence = True
                             if_any = True
+                            silence_rangex = str(silence_range)
                 list_transcript = list(chunkstring(transcript, 2000))
                 ####checking for greetings at start of transcript only
+                # for lt in list_transcript:
+                #     first_word = lt.partition(' ')[0]
+                #     time_of_first_word = timeword(first_word,words)
+                #     print("psyycycycyc",time_of_first_word)
+                #print("lllllllllll",list_transcript)
                 greeting_response = identify_greeting(list_transcript[0])
 
-                print("greeting reponse is:",greeting_response)
+                #print("greeting reponse is:",greeting_response)
                 contact_details = (greeting_response["greeting_details"])
                 greeting_prob = (greeting_response["probability"])
                 if(greeting_prob>0.4 and greeting_prob<0.6):
@@ -105,15 +113,18 @@ def run_on_csv(uploaded_file,thread_number,n_threads):
                 elif(greeting_prob>0.6):
                     greeting_details = True
                     if_any = True
-
+                words_till_now =""
                 #print(list_transcript)
                 for transcript in list_transcript:
+                    words_till_now += transcript
+                    first_word_time11 = first_word_time(words,words_till_now)
+                    print("ffffff",first_word_time11)
                     eng_from_hindi = translate_hindi_to_english(transcript)
-                    print(transcript,eng_from_hindi)
+                    #print(transcript,eng_from_hindi)
                     response = identify_classes(eng_from_hindi)
                     #intermediate area; a topic that is not clearly one thing or the other.
 
-                    print(response["results"][0]["category_scores"])
+                    #print(response["results"][0]["category_scores"])
                     # for scores in response["results"]:
                     #     print(scores)
                     #     print(type(scores))
@@ -193,26 +204,26 @@ def run_on_csv(uploaded_file,thread_number,n_threads):
                     if(probability>0.4 and probability<0.6):
                         contact_details = "intermediate"
                         if_any = "intermediate"
-                    df = pd.DataFrame([[astrologer_idx,id1x,type1x,user_idx,created_atx,order_item_idx,star_ratingx,number,url_base,transcript,confidence,eng_from_hindi,sexual,sexual_score,hate,hate_score,harrasment,harrasment_score,self_harm,self_harm_score,sexual_minor,sexual_minor_score,threatening,threatening_score,violence_graphic,violence_graphic_score,self_harm_intent,self_harm_intent_score,self_harm_instructions,self_harm_instructions_score,violence,violence_score,contact_details,probability,silence,background_noise,greeting_response,greeting_prob,if_any]],
-                        columns=['astrologer_id','id1','type1','user_id','created_at','order_item_id','star_rating','number','url_base','transcript','confidence','eng_from_hindi','sexual','sexual_score','hate','hate_score','harrasment','harrasment_score','self_harm','self_harm_score','sexual_minor','sexual_minor_score','threatening','threatening_score','violence_graphic','violence_graphic_score','self_harm_intent','self_harm_intent_score','self_harm_instructions','self_harm_instructions_score','violence','violence_score','contact_details','probability','silence','background_noise','greeting_response','greeting_prob','if_any'])
-                    print(df)
+                    df = pd.DataFrame([[astrologer_idx,id1x,type1x,user_idx,created_atx,order_item_idx,star_ratingx,number,url_base,transcript,first_word_time11,confidence,eng_from_hindi,sexual,sexual_score,hate,hate_score,harrasment,harrasment_score,self_harm,self_harm_score,sexual_minor,sexual_minor_score,threatening,threatening_score,violence_graphic,violence_graphic_score,self_harm_intent,self_harm_intent_score,self_harm_instructions,self_harm_instructions_score,violence,violence_score,contact_details,probability,silence,silence_rangex,greeting_response,greeting_prob,if_any]],
+                        columns=['astrologer_id','id1','type1','user_id','created_at','order_item_id','star_rating','number','url_base','transcript','first_word_time','confidence','eng_from_hindi','sexual','sexual_score','hate','hate_score','harrasment','harrasment_score','self_harm','self_harm_score','sexual_minor','sexual_minor_score','threatening','threatening_score','violence_graphic','violence_graphic_score','self_harm_intent','self_harm_intent_score','self_harm_instructions','self_harm_instructions_score','violence','violence_score','contact_details','probability','silence','silence_rangex','greeting_response','greeting_prob','if_any'])
+                    #print(df)
                     
                     hdr = False  if os.path.isfile(outfile_audio) else True
                     df.to_csv(outfile_audio, mode='a', header=hdr)
                     #df.to_csv('file_name.csv',mode='a+')
-                    print(transcript)
-                    sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions,silence,background_noise,greeting_response,greeting_prob,if_any = (False,)*15
+                    #print(transcript)
+                    sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions,silence,silence_rangex,greeting_response,greeting_prob,if_any = (False,)*15
                     #sexual,hate,harrasment,self_harm,sexual_minor,threatening,violence,violence_graphic,self_harm_intent,self_harm_instructions,silence,if_any = (False,)*12
         except Exception as e:
-            print(e)
-            l = 39 *["None"]
-            transcript = "None"
-            confidence = "None"
-            words = "None"
+            #print(e)
+            l = 40 *["None"]
+            transcript = i
+            confidence = i
+            words = i
             hdr = False  if os.path.isfile(outfile_errors) else True
             df = pd.DataFrame([l],
-                columns=['astrologer_id','id1','type1','user_id','created_at','order_item_id','star_rating','number','url_base','transcript','confidence','eng_from_hindi','sexual','sexual_score','hate','hate_score','harrasment','harrasment_score','self_harm','self_harm_score','sexual_minor','sexual_minor_score','threatening','threatening_score','violence_graphic','violence_graphic_score','self_harm_intent','self_harm_intent_score','self_harm_instructions','self_harm_instructions_score','violence','violence_score','contact_details','probability','silence','background_noise','greeting_response','greeting_prob','if_any'])
-            print(df)
+                columns=['astrologer_id','id1','type1','user_id','created_at','order_item_id','star_rating','number','url_base','transcript','first_word_time','confidence','eng_from_hindi','sexual','sexual_score','hate','hate_score','harrasment','harrasment_score','self_harm','self_harm_score','sexual_minor','sexual_minor_score','threatening','threatening_score','violence_graphic','violence_graphic_score','self_harm_intent','self_harm_intent_score','self_harm_instructions','self_harm_instructions_score','violence','violence_score','contact_details','probability','silence','silence_rangex','greeting_response','greeting_prob','if_any'])
+            #print(df)
             df.to_csv(outfile_errors,mode='a+')
             continue
     with open(outfile_audio, "rb") as template_file:
@@ -265,7 +276,7 @@ def run_on_csv(uploaded_file,thread_number,n_threads):
 
 
 
-n_threads = 20
+n_threads = 10
 
 thread_list =[]
 for thr in range(n_threads):

@@ -228,7 +228,7 @@ text6 = "you dont matter anymore"
 
 
 def identify_silence(words,length_audio):
-    start = 0
+    start = 10
     end = length_audio
     silence_ranges = []
     print(float(words[0].start))
@@ -241,9 +241,37 @@ def identify_silence(words,length_audio):
     print(silence_ranges)
     return silence_ranges
 
+def countWords(s):
+    # Check if the string is null
+    # or empty then return zero
+    if s.strip() == "":
+        return 0
+
+    # Splitting the string
+
+    words = s.split()
+
+    return len(words)
+
+
+def first_word_time(words,chunk):
+    print("here",float(words[0].start))
+    i = countWords(chunk)
+    print(float(words[i-1].start))
+    return(float(words[i-1].start))
+
+
 #identify_greeting(text5)
 #identify_greeting(text6)
 
+
+def timeword(first_word,words):
+    words = words
+    first_word = first_word
+    for i in range(1,len(words)):
+        if(words[i].word==first_word):
+            print(words.start)
+            return words.start
 
 
 
@@ -362,3 +390,18 @@ def timestring():
     timestr = time.strftime("%d%m%Y")
     print(timestr)
     return timestr
+
+
+
+# t1 = "Obama mera mamma hai,hello"
+
+# words_replace = ["Obama,obama,bama,mama,mamma,hello"]
+# replace_with = "vama"
+
+
+# for word_replace in words_replace:
+#     print(word_replace)
+#     #print(word_replace)
+#     new = t1.replace(word_replace,replace_with)
+#     print("t1",new)
+# print(t1)
