@@ -73,14 +73,14 @@ chain = (
 # ) | JsonKeyOutputFunctionsParser(key_name="papers")
 
 
-def get_completion(prompt, model="gpt-3.5-turbo", temperature=0): 
+def get_completion(prompt, model="gpt-4o-mini", temperature=0): 
     messages = [{"role": "user", "content": prompt}]
     response = client.chat.completions.create(model=model,
     messages=messages,
     temperature=temperature)
     return response.choices[0].message.content
 
-def get_completion1(prompt, model="gpt-3.5-turbo", temperature=0): 
+def get_completion1(prompt, model="gpt-4o-mini", temperature=0): 
     messages = [{"role": "user", "content": prompt}]
     response = client.chat.completions.create(model=model,response_format={ "type": "json_object" },
     messages=messages,
@@ -99,7 +99,7 @@ def call_api(AUDIO_URL):
         # STEP 2: Call the transcribe_url method on the prerecorded class
         options = PrerecordedOptions(
             model="nova-2",
-            smart_format=False,
+            smart_format=True,
             language= "hi"
         )
         url_response = deepgram.listen.prerecorded.v("1").transcribe_url(AUDIO_URL, options)
@@ -114,9 +114,9 @@ def call_api(AUDIO_URL):
         print(f"Exception: {e}")
         return False
 
-def read_variable_from_csv(csv_file,variable):
+def read_variable_from_csv(csv_file,variable,sep):
     pd.options.display.max_rows = 9
-    df = pd.read_csv(csv_file,on_bad_lines=lambda x: x[:-1], engine='python')
+    df = pd.read_csv(csv_file,on_bad_lines=lambda x: x[:-1], engine='python',sep=sep)
     variable = str(variable)
     var_df = df[variable]#file_url,transcript
     return var_df
@@ -129,7 +129,7 @@ def read_variable_from_csv(csv_file,variable):
 
 def translate_hindi_to_english(text):
     prompt = f"""
-Translate the following Hindi or Hinglish text to English: \ 
+Translate the following Hindi or Hinglish text to English: Just return the translation and do not explain the meaning. \ 
 ```{text}```
 """
     response = get_completion(prompt)
@@ -138,7 +138,7 @@ Translate the following Hindi or Hinglish text to English: \
 
 def translate_hinglish_to_english(text):
     prompt = f"""
-Translate the following Hinglish text to English: \ 
+Translate the following Hinglish text to English: Just return the exact translation do not explain meaning \ 
 ```{text}```
 """
     response = get_completion(prompt)
@@ -364,10 +364,10 @@ from datetime import datetime
 
 def convert_to_ms(t):
     time = str(t)
-    # time = time.replace("T"," ")
+    time = time.replace(" ","T")
     # time = time.replace("Z","")
-    dt_obj = datetime.strptime(time,
-                           '%Y-%m-%dT%H:%M:%S.%fZ')
+    dt_obj = datetime.strptime(time[:-6],
+                           '%Y-%m-%dT%H:%M:%S.%f')
     millisec = dt_obj.timestamp() * 1000
     print(millisec)
     return millisec
